@@ -2,7 +2,30 @@
   <h3><%= @user.username %>'s profile</h3>
 
   <p>
+    <% unless current_user&.eql? @user %>
+      <%= form_with url: '/friendships', method: :post do %>
+        <%= hidden_field_tag :invitee_id, @user.id %>
+        <%= submit_tag 'Request friendship' %>
+      <% end %>
+    <% end %>
+  </p>
+
+  <p>
     <% if current_user&.eql? @user %>
+      <h4>Friend Requests</h4>
+      <ul>
+        <% @user.requested_friendships.each do |request| %>
+          <li>
+            <%= request.requester.username %>
+            <% Friendship::STATUSES.each do |status| %>
+              <%= link_to change_status_friendship_path(request, status: status), method: :patch do %>
+                <%= status %>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+
       <%= link_to "Upload photos", new_photo_path %>
     <% end %>
   </p>
@@ -16,4 +39,14 @@
       <% end %>
     <% end %>
   <% end %>
+
+  <h4>Friends List</h4>
+  <ul>
+    <% @user.friends.each do |friend| %>
+      <li>
+        <%= friend.username %>
+      </li>
+    <% end %>
+  </ul>
+
 </div>

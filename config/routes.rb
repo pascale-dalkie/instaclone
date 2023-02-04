@@ -12,6 +12,12 @@ Rails.application.routes.draw do
 
   resources :comments, only: [:create, :edit, :update, :destroy]
 
+  resources :friendships, only: [:create] do
+    member do
+      patch :change_status
+    end
+  end
+
   root 'photos#index'
 
   get '*path', to: 'photos#index', constraints: lambda { |req| req.path.exclude? 'rails/active_storage' }
